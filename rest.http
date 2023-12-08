@@ -9,10 +9,11 @@ POST http://localhost:3000/auth/login
 
 ### Register Route 
 POST http://localhost:3000/auth/register
-Content-Type : application/json
+Content-Type: application/json
+
 {
-    "email":"chitwan@gmail.com",
-    "password":"1234"
+    "email": "chitwan12@gmail.com",
+    "password": "1234"
 }
 
 ### refresh token Route 
