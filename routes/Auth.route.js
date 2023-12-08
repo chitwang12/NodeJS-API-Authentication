@@ -1,22 +1,28 @@
 const express = require("express");
 const router = express.Router();
 const createError = require('http-errors');
-const User = require('../Models /User.model')
+const User = require('../Models /User.model');
+const {authSchema} = require('../helpers/validationSchema')
 
 router.post('/register',async (req,res,next) => {
-    console.log(req.body);
+    // console.log(req.body);
     try {
         const{email,password}= req.body;
-        if(!email || !password)  throw createError.BadRequest()
+        const res = await authSchema.validateAsync(req.body);
+        console.log("Reached here" ,res);
 
-        const doesExist = await User.findOne({email:email})
-        if(doesExist)throw createError.Conflict(`${email} is Already Registered `)
+        const doesExist = await User.findOne({email:res.email})
+        
+        if(doesExist)
+        throw createError.Conflict(`${res.email} is Already Registered `)
 
-        const user = new User({email,password})
-        const savedUser = await user.save();
-        res.send(savedUser);
+        const user = new User({res})
+        const savedUser = await user.save()
+        
+        res.send(savedUser)
     } catch (error) {
-        next(error);
+        if(error.isJoi === true)error.status = 422
+        next(error)
     }
 })
 router.post('/login',async(req,res,next)=>{
